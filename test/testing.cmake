@@ -1,6 +1,4 @@
-set(MESHES ""
-    CACHE STRING
-    "Extracted http://scorec.rpi.edu/pumi/pumi_test_meshes.tar.gz")
+set(MESHES "/mnt/d/ubuntu/repository/pumi-meshes")
 function(mpi_test TESTNAME PROCS EXE)
   add_test(
     NAME ${TESTNAME}
