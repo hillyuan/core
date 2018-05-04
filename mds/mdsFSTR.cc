@@ -21,12 +21,14 @@ static void readNodes(std::istream& f, Nodes& nodes)
   char c;
   std::string line;
   std::pair<int, apf::Vector3> entry;
-  while (f.peek() != '*' && f.peek() != EOF)
+  while (f.peek() != '!' && f.peek() != EOF)
   {
       std::getline(f, line);
 	  line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
 	  std::stringstream ss(line);
 	  ss >> entry.first >>c >> entry.second[0] >>c  >> entry.second[1] >> c >> entry.second[2];
+	//  std::cout << entry.first <<" "<< entry.second[0] <<" "  << entry.second[1] 
+	//  << " " << entry.second[2] << std::endl;
 	  nodes.insert(entry);
   }    
 }
@@ -39,7 +41,7 @@ static Mesh2* parseElems(std::string upper,std::istream& f, Nodes& nodes)
   apf::FieldShape* shape = 0;
   apf::FieldShape* prevShape = 0;
   apf::Numbering* enumbers = 0;
-  
+
   unsigned n_nodes_per_elem = 0;
   int apfType=0;
   if (upper.find("T2") != std::string::npos ||
@@ -71,18 +73,19 @@ static Mesh2* parseElems(std::string upper,std::istream& f, Nodes& nodes)
   {   
     apfType = apf::Mesh::HEX;
 	n_nodes_per_elem = 8;
+	shape = apf::getLagrange(1);
   }
   else if (upper.find("CHEXA20") != std::string::npos ||
            upper.find("362") != std::string::npos)
   {   
     apfType = apf::Mesh::HEX;
 	n_nodes_per_elem = 20;
+	shape = apf::getLagrange(2);
   }
   else
   {
 	  std::cerr << "Unrecognized element type: " << upper << std::endl;
   }
-  n_nodes_per_elem = n_nodes_per_elem+1;
   
   if (!m) {
       m = makeEmptyMdsMesh(gmi_load(".null"), Mesh::typeDimension[apfType], false);
