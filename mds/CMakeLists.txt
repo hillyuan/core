@@ -28,6 +28,7 @@ set(SOURCES
   apfBox.cc
   mdsANSYS.cc
   mdsGmsh.cc
+  mdsFSTR.cc
   mdsUgrid.cc
 )
 

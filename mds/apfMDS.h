@@ -197,6 +197,7 @@ void printUgridPtnStats(gmi_model* g, const char* ugridfile, const char* ptnfile
   supported, which become linear and quadratic tetrahedra,
   respectively. */
 Mesh2* loadMdsFromANSYS(const char* nodefile, const char* elemfile);
+Mesh2* loadMdsFromFSTR(const char* filename);
 
 void disownMdsModel(Mesh2* in);
 

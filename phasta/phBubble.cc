@@ -18,7 +18,6 @@ typedef std::vector<Bubble> Bubbles;
 
 void readBubbles(Bubbles& bubbles, std::string bubbleFileName)
 {
-  //char bubblefname[1024];
   FILE *filebubble;
   Bubble readbubble;
 

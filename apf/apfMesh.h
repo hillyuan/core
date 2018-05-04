@@ -49,7 +49,7 @@ typedef DynamicArray<MeshEntity*> Adjacent;
              avoiding dynamic allocation, and downward
              adjacencies have a guaranteed bound.
  */
-typedef MeshEntity* Downward[12];
+typedef MeshEntity* Downward[12];   //why 12?
 
 class Migration;
 

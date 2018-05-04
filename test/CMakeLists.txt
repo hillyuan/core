@@ -39,6 +39,7 @@ util_exe_func(extrude extrude.cc)
 # Mesh conversion/formatting utilities
 util_exe_func(from_gmsh gmsh.cc)
 util_exe_func(from_ansys ansys.cc)
+util_exe_func(from_fstr fstr.cc)
 util_exe_func(from_neper neper.cc)
 util_exe_func(from_ugrid ugrid.cc)
 util_exe_func(nektar_align nektar_align.cc)

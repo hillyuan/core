@@ -231,28 +231,39 @@ pMesh pumi_mesh_loadSerial(pGeom g, const char* filename, const char* mesh_type)
 
 pMesh pumi_mesh_load(pGeom g, const char* filename, int num_in_part, const char* mesh_type)
 {
-  if (strcmp(mesh_type,"mds"))
+  if (strcmp(mesh_type,"mds")==0)
+  {
+    if (num_in_part==1 && pumi_size()>1) // do static partitioning
+    {
+      MPI_Comm prevComm = PCU_Get_Comm();
+      int num_target_part = PCU_Comm_Peers()/num_in_part;
+      bool isMaster = ((PCU_Comm_Self() % num_target_part) == 0);
+      pMesh m = 0;
+      apf::Migration* plan = 0;   
+      split_comm(num_target_part);
+      if (isMaster) {
+        m = apf::loadMdsMesh(g->getGmi(), filename);
+        plan = getPlan(m, num_target_part);
+      }
+      merge_comm(prevComm);
+      pumi::instance()->mesh = apf::repeatMdsMesh(m, g->getGmi(), plan, num_target_part);
+    }
+    else
+      pumi::instance()->mesh = apf::loadMdsMesh(g->getGmi(), filename);
+  }
+  else if (strcmp(mesh_type,"gmsh")==0)
+  {
+	  pumi::instance()->mesh = apf::loadMdsFromGmsh(g->getGmi(), filename);
+  }
+  else if (strcmp(mesh_type,"fstr")==0)
+  {
+	  pumi::instance()->mesh = apf::loadMdsFromFSTR(filename);
+  }
+  else 
   {
     if (!PCU_Comm_Self()) std::cout<<"[PUMI ERROR] "<<__func__<<" failed: invalid mesh type "<<mesh_type<<"\n";
     return NULL;
   }
-  if (num_in_part==1 && pumi_size()>1) // do static partitioning
-  {
-    MPI_Comm prevComm = PCU_Get_Comm();
-    int num_target_part = PCU_Comm_Peers()/num_in_part;
-    bool isMaster = ((PCU_Comm_Self() % num_target_part) == 0);
-    pMesh m = 0;
-    apf::Migration* plan = 0;   
-    split_comm(num_target_part);
-    if (isMaster) {
-      m = apf::loadMdsMesh(g->getGmi(), filename);
-      plan = getPlan(m, num_target_part);
-    }
-    merge_comm(prevComm);
-    pumi::instance()->mesh = apf::repeatMdsMesh(m, g->getGmi(), plan, num_target_part);
-  }
-  else
-    pumi::instance()->mesh = apf::loadMdsMesh(g->getGmi(), filename);
   pumi_mesh_print(pumi::instance()->mesh);
   return pumi::instance()->mesh;
 }
